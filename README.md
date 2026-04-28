@@ -26,7 +26,7 @@
 ---
 
 ## Business Problem
-The project serves e-commerce logistics and operations managers aiming to improve customer satisfaction. By analyzing the relationship between delivery delays and customer review scores, the business can identify key areas for logistics optimization and customer communication.
+The project analyzes the **Olist Brazilian E-Commerce** public dataset to investigate the relationship between **delivery performance** and **customer satisfaction** in the Brazilian e-commerce ecosystem.
 
 **Core Business Question**
 
@@ -41,22 +41,23 @@ The project serves e-commerce logistics and operations managers aiming to improv
 ## Dataset
 | Attribute | Details |
 |---|---|
-| **Source Name** | Kaggle - Brazilian E-Commerce Public Dataset by Olist |
+| **Source Name** | Kaggle — Brazilian E-Commerce Public Dataset by Olist |
 | **Direct Access Link** | [https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) |
 | **Row Count** | 99,441 (Orders) |
 | **Column Count** | > 40 across 6 datasets |
 | **Time Period Covered** | 2016 to 2018 |
 | **Format** | CSV |
 
-**Key Columns Used**
+**Key Datasets Used**
 
-| Column Name | Description | Role in Analysis |
-|---|---|---|
-| `order_status` | Status of the order (e.g., delivered) | Used to filter completed orders |
-| `order_purchase_timestamp` | Date and time the order was placed | Used for time-series and monthly trends |
-| `order_delivered_customer_date` | Date the order reached the customer | Used to compute delivery delay |
-| `order_estimated_delivery_date` | Promised delivery date | Used to compute delivery delay |
-| `review_score` | Customer rating from 1 to 5 | Target variable for customer satisfaction |
+| Dataset | Rows | Columns | Description |
+|---------|------|---------|-------------|
+| `olist_orders_dataset.csv` | 99,441 | 8 | Core orders table with timestamps and status |
+| `olist_order_items_dataset.csv` | 112,650 | 7 | Order line items with price and freight |
+| `olist_customers_dataset.csv` | 99,441 | 5 | Customer demographics (city, state) |
+| `olist_order_reviews_dataset.csv` | 99,224 | 7 | Customer review scores and comments |
+| `olist_products_dataset.csv` | 32,951 | 9 | Product catalog information |
+| `olist_sellers_dataset.csv` | 3,095 | 4 | Seller location data |
 
 For full column definitions, see [`docs/data_dictionary.md`](docs/data_dictionary.md).
 
@@ -65,8 +66,8 @@ For full column definitions, see [`docs/data_dictionary.md`](docs/data_dictionar
 ## KPI Framework
 | KPI | Definition | Formula / Computation |
 |---|---|---|
-| Delivery Delay Days | Difference between estimated and actual delivery | `actual_delivery_date - estimated_delivery_date` |
-| On-Time Delivery Rate % | Percentage of orders delivered on or before the estimated date | `(Orders with delay <= 0 / Total Orders) * 100` |
+| Delivery Delay Days | Core KPI — Difference between estimated and actual delivery | `order_delivered_customer_date - order_estimated_delivery_date` |
+| Actual Delivery Days | Logistics performance metric | `order_delivered_customer_date - order_purchase_timestamp` |
 | Average Review Score | Mean customer satisfaction rating | `sum(review_score) / count(reviews)` |
 
 Document KPI logic clearly in `notebooks/04_statistical_analysis.ipynb` and `notebooks/05_final_load_prep.ipynb`.
@@ -77,23 +78,22 @@ Document KPI logic clearly in `notebooks/04_statistical_analysis.ipynb` and `not
 | Item | Details |
 |---|---|
 | **Dashboard URL** | _Paste Tableau Public link here_ |
-| **Executive View** | High-level summary of total orders, average review scores, and overall on-time delivery rates. |
-| **Operational View** | Detailed breakdown of delivery delays by state, review score distribution, and correlation between delay days and scores. |
-| **Main Filters** | Year/Month of purchase, Product Category, Delivery Status (On-Time / Late) |
+| **Executive View** | High-level summary of total orders, average review scores, and overall delivery performance. |
+| **Operational View** | Detailed breakdown of delivery delays by state, review score distribution, and correlation analysis. |
+| **Main Filters** | Year/Month of purchase, Delivery Status, Product Category |
 
 Store dashboard screenshots in [`tableau/screenshots/`](tableau/screenshots/) and document the public links in [`tableau/dashboard_links.md`](tableau/dashboard_links.md).
 
 ---
 
 ## Key Insights
-
-1. **Late Deliveries Plunge Satisfaction**: Delivery performance is a critical driver of customer satisfaction. Late deliveries receive review scores approximately 2 points lower than on-time deliveries (2.27 vs 4.29).
-2. **Statistically Significant Relationship**: The relationship between delivery delay and review score is statistically significant (p < 0.001) with a Pearson correlation of −0.27.
-3. **High On-Time Rate**: 93.2% of orders arrive on time or early, with an average of 12 days ahead of the estimated delivery date.
-4. **Disproportionate Impact of Delays**: Only 6.8% of orders are late, but these drive a disproportionate share of negative reviews.
-5. **Growth in Order Volume**: Order volume showed strong growth throughout 2017–2018, indicating a healthy marketplace.
-6. **Geographic Disparities**: Certain states experience significantly higher late delivery rates, indicating regional logistics challenges.
-7. **Multifaceted Satisfaction**: Delivery delay alone explains ~7% of review score variance, suggesting that product quality, seller communication, and other factors also play important roles.
+1. **Delivery performance is a critical driver of customer satisfaction.** Late deliveries receive review scores approximately 2 points lower than on-time deliveries (2.27 vs 4.29).
+2. **The relationship is statistically significant** (p < 0.001) with a Pearson correlation of −0.27.
+3. **93.2% of orders arrive on time or early**, with an average of 12 days ahead of the estimated delivery date.
+4. **Only 6.8% of orders are late**, but these drive a disproportionate share of negative reviews.
+5. **Order volume showed strong growth** throughout 2017–2018, indicating a healthy marketplace.
+6. **Geographic disparities exist** — some states experience significantly higher late delivery rates.
+7. **Delivery delay alone explains ~7% of review score variance**, suggesting that product quality, seller communication, and other factors also play important roles.
 
 ---
 
@@ -101,73 +101,82 @@ Store dashboard screenshots in [`tableau/screenshots/`](tableau/screenshots/) an
 
 | # | Insight | Recommendation | Expected Impact |
 |---|---|---|---|
-| 1 | Geographic Disparities in late deliveries | Investigate and partner with better regional logistics providers in underperforming states. | Reduction in late delivery rate and improved review scores in targeted states. |
-| 2 | Late deliveries drastically reduce satisfaction | Implement proactive customer communication when an order is flagged as delayed before the customer notices. | Mitigation of the negative impact on review scores for late deliveries. |
-| 3 | Delivery delay explains only 7% of score variance | Establish quality control mechanisms and seller performance metrics beyond just logistics. | Holistic improvement in customer satisfaction driven by product and seller quality. |
+| 1 | Geographic disparities exist in late delivery rates | Target underperforming states with enhanced logistics partnerships or localized distribution centers. | Lower delivery delays in specific regions and corresponding rise in review scores. |
+| 2 | Late deliveries drastically lower review scores (2.27 vs 4.29) | Implement automated, proactive customer communication for orders that are predicted to be late. | Mitigation of customer frustration, potentially raising the review scores of late orders. |
+| 3 | Delivery delay explains 7% of review score variance | Expand analysis and quality control to product quality and seller performance. | Address the remaining 93% of variance to achieve holistically high customer satisfaction. |
 
 ---
 
 ## Repository Structure
-```text
+```
 SectionName_TeamID_OlistAnalysis/
-|
-|-- README.md
-|
-|-- data/
-|   |-- raw/                         # Original dataset (never edited)
-|   `-- processed/                   # Cleaned output from ETL pipeline
-|
-|-- notebooks/
-|   |-- 01_extraction.ipynb
-|   |-- 02_cleaning.ipynb
-|   |-- 03_eda.ipynb
-|   |-- 04_statistical_analysis.ipynb
-|   `-- 05_final_load_prep.ipynb
-|
-|-- scripts/
-|   `-- etl_pipeline.py
-|
-|-- tableau/
-|   |-- screenshots/
-|   `-- dashboard_links.md
-|
-|-- reports/
-|   |-- README.md
-|   |-- project_report_template.md
-|   `-- presentation_outline.md
-|
-|-- docs/
-|   `-- data_dictionary.md
-|
-|-- DVA-oriented-Resume/
-`-- DVA-focused-Portfolio/
+├── README.md                          # This file — project overview & documentation
+├── data/
+│   ├── raw/                           # Original unmodified CSV files from Kaggle
+│   │   ├── olist_orders_dataset.csv
+│   │   ├── olist_order_items_dataset.csv
+│   │   ├── olist_customers_dataset.csv
+│   │   ├── olist_order_reviews_dataset.csv
+│   │   ├── olist_products_dataset.csv
+│   │   └── olist_sellers_dataset.csv
+│   ├── processed/                     # Cleaned & merged master dataset
+│   │   └── olist_cleaned.csv
+│   └── final/                         # Tableau-optimized final dataset
+│       └── tableau_ready_olist.csv
+├── notebooks/
+│   ├── 01_extraction.ipynb            # Data loading, schema inspection, null audit
+│   ├── 02_cleaning.ipynb              # Full ETL pipeline with 15 transformations
+│   ├── 03_eda.ipynb                   # Exploratory data analysis with 7 charts
+│   ├── 04_statistical_analysis.ipynb  # Correlation, hypothesis testing, regression
+│   └── 05_final_load_prep.ipynb       # Tableau-ready dataset preparation
+├── scripts/
+│   └── etl_pipeline.py               # Reproducible Python ETL script
+├── docs/
+│   └── data_dictionary.md            # Comprehensive data dictionary
+├── reports/
+│   ├── plots/                         # All analysis charts (PNG)
+│   │   ├── chart1_review_scores.png
+│   │   ├── chart2_delivery_delay.png
+│   │   ├── chart3_delay_vs_score.png
+│   │   ├── chart4_monthly_orders.png
+│   │   ├── chart5_top_categories.png
+│   │   ├── chart6_late_by_state.png
+│   │   ├── chart7_payment_types.png
+│   │   ├── correlation_plot.png
+│   │   ├── hypothesis_test_plot.png
+│   │   └── regression_plot.png
+│   └── .gitkeep
+└── tableau/
+    ├── dashboard_links.md             # Links to Tableau dashboards
+    └── screenshots/
+        └── .gitkeep
 ```
 
 ---
 
 ## Analytical Pipeline
-The project follows a structured 7-step workflow:
+The project follows a structured workflow:
 
-1. **Define** - Sector selected, problem statement scoped, mentor approval obtained.
-2. **Extract** - Raw dataset sourced and committed to `data/raw/`; data dictionary drafted.
-3. **Clean and Transform** - Cleaning pipeline built in `notebooks/02_cleaning.ipynb` and optionally `scripts/etl_pipeline.py`.
-4. **Analyze** - EDA and statistical analysis performed in notebooks `03` and `04`.
-5. **Visualize** - Interactive Tableau dashboard built and published on Tableau Public.
-6. **Recommend** - 3-5 data-backed business recommendations delivered.
-7. **Report** - Final project report and presentation deck completed and exported to PDF in `reports/`.
+1. **Extraction**: Inspected 6 datasets with 99,000+ orders, validating schemas and performing null audits (`01_extraction.ipynb`).
+2. **ETL & Cleaning**: Executed a 15-step transformation pipeline, merging tables, handling nulls, parsing dates, and computing key metrics like `delivery_delay_days`. Exported single master dataset (`02_cleaning.ipynb` & `scripts/etl_pipeline.py`).
+3. **Exploratory Data Analysis**: Generated 7 key visualizations uncovering delivery distributions, monthly trends, top categories, and state-wise delays (`03_eda.ipynb`).
+4. **Statistical Analysis**: Conducted Pearson Correlation, Independent Samples T-Test, and Linear Regression to quantify the impact of delays on satisfaction (`04_statistical_analysis.ipynb`).
+5. **Dashboard Prep**: Formatted the final optimized dataset for Tableau (`05_final_load_prep.ipynb`).
+6. **Visualization**: Interactive Tableau dashboard built to support logistics optimization decisions.
+7. **Report**: Final project report and presentation deck.
 
 ---
 
 ## Tech Stack
 | Tool | Status | Purpose |
 |---|---|---|
-| Python + Jupyter Notebooks | Mandatory | ETL, cleaning, analysis, and KPI computation |
-| Google Colab | Supported | Cloud notebook execution environment |
-| Tableau Public | Mandatory | Dashboard design, publishing, and sharing |
-| GitHub | Mandatory | Version control, collaboration, contribution audit |
-| SQL | Optional | Initial data extraction only, if documented |
-
-**Recommended Python libraries:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `scipy`, `statsmodels`, `scikit-learn`
+| Python 3.12 | Mandatory | Core programming language |
+| Pandas, NumPy | Mandatory | Data manipulation and processing |
+| SciPy, Scikit-learn | Mandatory | Statistical analysis (Pearson, T-test, Regression) |
+| Matplotlib, Seaborn | Mandatory | Data visualization and plotting |
+| Jupyter Notebook | Mandatory | Interactive analysis environment |
+| Tableau | Mandatory | Interactive dashboard design |
+| Git, GitHub | Mandatory | Version control and collaboration |
 
 ---
 
@@ -182,13 +191,10 @@ The project follows a structured 7-step workflow:
 | Storytelling and Clarity | 10 | Is the presentation professional and coherent? |
 | **Total** | **100** | |
 
-> Marks are awarded for analytical thinking and decision relevance, not chart quantity, visual decoration, or code length.
-
 ---
 
 ## Submission Checklist
 **GitHub Repository**
-
 - [ ] Public repository created with the correct naming convention (`SectionName_TeamID_ProjectName`)
 - [ ] All notebooks committed in `.ipynb` format
 - [ ] `data/raw/` contains the original, unedited dataset
@@ -200,29 +206,16 @@ The project follows a structured 7-step workflow:
 - [ ] All members have visible commits and pull requests
 
 **Tableau Dashboard**
-
 - [ ] Published on Tableau Public and accessible via public URL
 - [ ] At least one interactive filter included
 - [ ] Dashboard directly addresses the business problem
 
-**Project Report**
-
+**Project Report & Presentation**
 - [ ] Final report exported as PDF into `reports/`
-- [ ] Cover page, executive summary, sector context, problem statement
-- [ ] Data description, cleaning methodology, KPI framework
-- [ ] EDA with written insights, statistical analysis results
-- [ ] Dashboard screenshots and explanation
-- [ ] 8-12 key insights in decision language
-- [ ] 3-5 actionable recommendations with impact estimates
+- [ ] Final presentation exported as PDF into `reports/`
 - [ ] Contribution matrix matches GitHub history
 
-**Presentation Deck**
-
-- [ ] Final presentation exported as PDF into `reports/`
-- [ ] Title slide through recommendations, impact, limitations, and next steps
-
 **Individual Assets**
-
 - [ ] DVA-oriented resume updated to include this capstone
 - [ ] Portfolio link or project case study added
 
@@ -249,6 +242,35 @@ _Declaration: We confirm that the above contribution details are accurate and ve
 
 ## Academic Integrity
 All analysis, code, and recommendations in this repository must be the original work of the team listed above. Free-riding is tracked via GitHub Insights and pull request history. Any mismatch between the contribution matrix and actual commit history may result in individual grade adjustments.
+
+---
+
+## How to Run
+
+### Prerequisites
+```bash
+pip install pandas numpy matplotlib seaborn scipy scikit-learn
+```
+
+### Step-by-step
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/shubhanshu2103/Capstone2_Team_Diamond_OlistAnalysis.git
+   cd SectionName_TeamID_OlistAnalysis
+   ```
+
+2. **Download the dataset** from [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and place CSV files in `data/raw/`.
+
+3. **Run the ETL pipeline:**
+   ```bash
+   python scripts/etl_pipeline.py
+   ```
+   Or execute notebooks sequentially in `notebooks/`.
+
+4. **View outputs:**
+   - Cleaned data: `data/processed/olist_cleaned.csv`
+   - Tableau data: `data/final/tableau_ready_olist.csv`
+   - Charts: `reports/plots/`
 
 ---
 
