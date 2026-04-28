@@ -18,10 +18,10 @@
 | Role | Name | GitHub Username |
 |---|---|---|
 | Project Lead / ETL Lead | Shubhanshu dubey | `shubhanshu2103` |
-| Data Lead / EDA Lead | Om mishra | `github-handle` |
-| Analysis Lead | Karan rawat | `github-handle` |
-| Visualization Lead | Mridul | `github-handle` |
-| PPT and Quality Lead | ansh sharma | `github-handle` |
+| Data Lead / EDA Lead | Om mishra | `Om-Mishra09` |
+| Analysis Lead | Karan rawat | `Karan301205` |
+| Visualization Lead | Mridul | `Mridul012` |
+| PPT and Quality Lead | ansh sharma | `AnshS-GIT` |
 
 ---
 
@@ -139,8 +139,7 @@ SectionName_TeamID_OlistAnalysis/
 |-- docs/
 |   `-- data_dictionary.md
 |
-|-- DVA-oriented-Resume/
-`-- DVA-focused-Portfolio/
+
 ```
 
 ---
