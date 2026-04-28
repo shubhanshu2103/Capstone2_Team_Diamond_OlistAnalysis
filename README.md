@@ -276,17 +276,17 @@ The statistical analysis (notebook `04_statistical_analysis.ipynb`) includes thr
 
 | Team Member | Dataset and Sourcing | ETL and Cleaning | EDA and Analysis | Statistical Analysis | Tableau Dashboard | Report Writing | PPT and Viva |
 |---|---|---|---|---|---|---|---|
-| Shubhanshu dubey | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ |
-| Om mishra | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ |
-| Karan rawat | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ |
-| Mridul | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ |
-| ansh sharma | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ | _Owner / support_ |
+| Shubhanshu dubey | Owner | Owner | Support | Support | Support | Owner | Support |
+| Om mishra | Support | Support | Owner | Support | Support | Support | Support |
+| Karan rawat | Support | Support | Support | Owner | Support | Support | Support |
+| Mridul | Support | Support | Support | Support | Owner | Support | Support |
+| ansh sharma | Support | Support | Support | Support | Support | Support | Owner |
 
 _Declaration: We confirm that the above contribution details are accurate and verifiable through GitHub Insights, PR history, and submitted artifacts._
 
-**Team Lead Name:** _____________________________
+**Team Lead Name:** Shubhanshu dubey
 
-**Date:** _______________
+**Date:** 28 April 2026
 
 ---
 
