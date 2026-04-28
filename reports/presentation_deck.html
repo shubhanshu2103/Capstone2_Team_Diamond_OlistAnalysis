@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olist E-Commerce Analysis — Capstone Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f1a;--surface:#1a1a2e;--card:#16213e;--accent:#6c63ff;--accent2:#e94560;--text:#e8e8e8;--muted:#8b8b9e;--success:#00d2a0;--warn:#ffb347}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw}
+.deck{width:100%;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 80px;opacity:0;transform:translateX(60px);transition:all .5s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+.slide.prev{opacity:0;transform:translateX(-60px)}
+
+/* Navigation */
+.nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;z-index:100;background:rgba(26,26,46,.9);backdrop-filter:blur(12px);padding:12px 24px;border-radius:40px;border:1px solid rgba(108,99,255,.3)}
+.nav button{background:none;border:2px solid var(--accent);color:var(--accent);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;transition:.3s;display:flex;align-items:center;justify-content:center}
+.nav button:hover{background:var(--accent);color:#fff}
+.nav .counter{color:var(--muted);font-size:14px;min-width:60px;text-align:center;font-weight:500}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s;z-index:100}
+
+/* Slide styles */
+h1{font-size:3.2rem;font-weight:800;line-height:1.15;margin-bottom:16px}
+h2{font-size:2.2rem;font-weight:700;margin-bottom:20px;color:var(--accent)}
+h3{font-size:1.4rem;font-weight:600;margin-bottom:12px;color:var(--warn)}
+p,.desc{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:800px;text-align:center}
+.highlight{color:var(--accent);font-weight:700}
+.highlight2{color:var(--accent2);font-weight:700}
+.highlight3{color:var(--success);font-weight:700}
+
+/* Title slide */
+.title-slide h1{background:linear-gradient(135deg,#6c63ff,#e94560,#ffb347);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:3.6rem}
+.title-slide .subtitle{font-size:1.3rem;color:var(--muted);margin-top:8px}
+.title-slide .team{margin-top:40px;padding:16px 32px;background:var(--surface);border-radius:16px;border:1px solid rgba(108,99,255,.2)}
+
+/* Grid layouts */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1100px;margin-top:20px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;width:100%;max-width:1100px;margin-top:20px}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:1000px;margin-top:20px}
+
+/* Cards */
+.card{background:var(--surface);border-radius:16px;padding:28px;border:1px solid rgba(108,99,255,.15);transition:.3s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card h3{color:var(--accent);margin-bottom:8px}
+.card p{text-align:left;font-size:.95rem}
+
+/* Stat cards */
+.stat{text-align:center;background:var(--surface);border-radius:16px;padding:32px 20px;border:1px solid rgba(108,99,255,.15)}
+.stat .num{font-size:2.8rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .label{color:var(--muted);font-size:.9rem;margin-top:6px}
+
+/* Table */
+.tbl{width:100%;max-width:900px;border-collapse:collapse;margin-top:16px}
+.tbl th{background:var(--accent);color:#fff;padding:12px 16px;text-align:left;font-size:.9rem}
+.tbl td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);font-size:.9rem;color:var(--muted)}
+.tbl tr:hover td{color:var(--text)}
+
+/* Image */
+.chart-img{max-width:520px;max-height:360px;border-radius:12px;border:1px solid rgba(108,99,255,.2);object-fit:contain}
+
+/* Pipeline */
+.pipeline{display:flex;gap:0;align-items:center;margin-top:24px;flex-wrap:wrap;justify-content:center}
+.pipe-step{background:var(--surface);border:1px solid rgba(108,99,255,.2);border-radius:12px;padding:14px 20px;text-align:center;min-width:130px}
+.pipe-step .step-num{font-size:.75rem;color:var(--accent);font-weight:700;text-transform:uppercase}
+.pipe-step .step-name{font-size:.85rem;color:var(--text);margin-top:4px}
+.pipe-arrow{color:var(--accent);font-size:1.4rem;margin:0 6px}
+
+/* Findings list */
+.findings{text-align:left;max-width:900px}
+.finding{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
+.finding .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.finding .icon.red{background:rgba(233,69,96,.15);color:var(--accent2)}
+.finding .icon.green{background:rgba(0,210,160,.15);color:var(--success)}
+.finding .icon.blue{background:rgba(108,99,255,.15);color:var(--accent)}
+.finding .content h4{font-size:1rem;font-weight:600;margin-bottom:4px}
+.finding .content p{font-size:.9rem;text-align:left}
+
+.full-width{width:100%;max-width:1100px}
+.text-left{text-align:left!important}
+.mt-12{margin-top:12px}
+.mb-8{margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: Title -->
+<div class="slide title-slide active" data-slide="0">
+  <h1>Olist E-Commerce Analysis</h1>
+  <p class="subtitle">Delivery Performance & Customer Satisfaction in Brazilian E-Commerce</p>
+  <div class="team">
+    <p style="font-size:.9rem;color:var(--muted)">Capstone Project — Data Analytics</p>
+  </div>
+</div>
+
+<!-- SLIDE 2: Agenda -->
+<div class="slide" data-slide="1">
+  <h2>📋 Agenda</h2>
+  <div class="grid3">
+    <div class="card"><h3>01</h3><p>Problem Statement & Objectives</p></div>
+    <div class="card"><h3>02</h3><p>Dataset Overview & Source</p></div>
+    <div class="card"><h3>03</h3><p>ETL Pipeline & Methodology</p></div>
+    <div class="card"><h3>04</h3><p>Exploratory Data Analysis</p></div>
+    <div class="card"><h3>05</h3><p>Statistical Analysis & Results</p></div>
+    <div class="card"><h3>06</h3><p>Key Findings & Recommendations</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Problem Statement -->
+<div class="slide" data-slide="2">
+  <h2>❓ Problem Statement</h2>
+  <p style="font-size:1.3rem;color:var(--text);font-weight:500;margin-bottom:30px;max-width:900px">
+    "How does <span class="highlight2">delivery performance</span> impact <span class="highlight">customer satisfaction</span> in the Brazilian e-commerce ecosystem?"
+  </p>
+  <div class="grid3">
+    <div class="stat"><div class="num">99K+</div><div class="label">Orders Analyzed</div></div>
+    <div class="stat"><div class="num">2016–18</div><div class="label">Time Period</div></div>
+    <div class="stat"><div class="num">6</div><div class="label">Source Datasets</div></div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Dataset Overview -->
+<div class="slide" data-slide="3">
+  <h2>📊 Dataset Overview</h2>
+  <p class="mb-8">Source: <span class="highlight">Kaggle — Brazilian E-Commerce by Olist</span></p>
+  <table class="tbl">
+    <tr><th>Dataset</th><th>Rows</th><th>Columns</th><th>Key Fields</th></tr>
+    <tr><td>Orders</td><td>99,441</td><td>8</td><td>Timestamps, status, delivery dates</td></tr>
+    <tr><td>Order Items</td><td>112,650</td><td>7</td><td>Price, freight, product & seller IDs</td></tr>
+    <tr><td>Customers</td><td>99,441</td><td>5</td><td>City, state, zip code</td></tr>
+    <tr><td>Reviews</td><td>99,224</td><td>7</td><td>Score (1–5), comment text</td></tr>
+    <tr><td>Products</td><td>32,951</td><td>9</td><td>Category, weight, dimensions</td></tr>
+    <tr><td>Sellers</td><td>3,095</td><td>4</td><td>City, state, zip code</td></tr>
+  </table>
+</div>
+
+<!-- SLIDE 5: ETL Pipeline -->
+<div class="slide" data-slide="4">
+  <h2>🔧 ETL Pipeline</h2>
+  <p>15-step transformation pipeline producing a master dataset of <span class="highlight">96,470 rows × 23 columns</span></p>
+  <div class="pipeline">
+    <div class="pipe-step"><div class="step-num">Extract</div><div class="step-name">6 CSV Files</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Parse</div><div class="step-name">5 Datetimes</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Derive</div><div class="step-name">KPI Columns</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Clean</div><div class="step-name">Nulls & Dupes</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Aggregate</div><div class="step-name">Order Level</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Merge</div><div class="step-name">Master DF</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step"><div class="step-num">Load</div><div class="step-name">2 CSVs</div></div>
+  </div>
+  <div class="grid4 mt-12" style="max-width:800px">
+    <div class="card"><h3>Derived KPIs</h3><p>delivery_delay_days, actual_delivery_days, delivery_status, total_order_value</p></div>
+    <div class="card"><h3>Data Quality</h3><p>8 null rows dropped, 483 duplicate reviews deduplicated, 610 missing categories filled</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: EDA — Review Scores -->
+<div class="slide" data-slide="5">
+  <h2>📈 Review Score Distribution</h2>
+  <div class="grid2" style="align-items:center">
+    <div>
+      <img src="plots/chart1_review_scores.png" class="chart-img" alt="Review Scores">
+    </div>
+    <div class="text-left">
+      <h3>Key Observations</h3>
+      <p class="text-left">• Heavily right-skewed — majority are <span class="highlight3">5-star reviews</span></p>
+      <p class="text-left mt-12">• Score of 1 is the second most common — <span class="highlight2">polarized distribution</span></p>
+      <p class="text-left mt-12">• Customers tend to rate at extremes (love it or hate it)</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: EDA — Delivery Delays -->
+<div class="slide" data-slide="6">
+  <h2>📈 Delivery Delay Distribution</h2>
+  <div class="grid2" style="align-items:center">
+    <div>
+      <img src="plots/chart2_delivery_delay.png" class="chart-img" alt="Delivery Delay">
+    </div>
+    <div class="text-left">
+      <h3>Key Observations</h3>
+      <p class="text-left">• Most orders arrive <span class="highlight3">early</span> (mean delay ≈ −12 days)</p>
+      <p class="text-left mt-12">• Only <span class="highlight2">~6.8%</span> of orders arrive late</p>
+      <p class="text-left mt-12">• Sellers set conservative estimated dates as a buffer</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: EDA — Delay vs Score -->
+<div class="slide" data-slide="7">
+  <h2>📈 Delay vs. Review Score</h2>
+  <div class="grid2" style="align-items:center">
+    <div>
+      <img src="plots/chart3_delay_vs_score.png" class="chart-img" alt="Delay vs Score">
+    </div>
+    <div class="text-left">
+      <h3>Key Observations</h3>
+      <p class="text-left">• Clear <span class="highlight2">inverse relationship</span> — higher delay → lower score</p>
+      <p class="text-left mt-12">• 5-star reviews: avg delay = <span class="highlight3">−14 days</span> (early)</p>
+      <p class="text-left mt-12">• 1-star reviews: avg delay = <span class="highlight2">+3 days</span> (late)</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Statistical Analysis -->
+<div class="slide" data-slide="8">
+  <h2>📊 Statistical Results</h2>
+  <div class="grid3">
+    <div class="card" style="text-align:center">
+      <h3>Pearson Correlation</h3>
+      <div style="font-size:2.4rem;font-weight:800;color:var(--accent2);margin:12px 0">r = −0.267</div>
+      <p style="text-align:center">p-value ≈ 0.00<br>Significant negative correlation</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3>T-Test (Late vs On-Time)</h3>
+      <div style="font-size:2.4rem;font-weight:800;color:var(--accent);margin:12px 0">t = −132</div>
+      <p style="text-align:center">Late avg: 2.27 ★<br>On-time avg: 4.29 ★</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3>Linear Regression</h3>
+      <div style="font-size:2.4rem;font-weight:800;color:var(--success);margin:12px 0">R² = 0.071</div>
+      <p style="text-align:center">Coefficient: −0.034<br>Each day late → −0.034 score</p>
+    </div>
+  </div>
+  <p class="mt-12" style="font-size:.95rem">All results are <span class="highlight">statistically significant</span> at p &lt; 0.001</p>
+</div>
+
+<!-- SLIDE 10: Hypothesis Test Visual -->
+<div class="slide" data-slide="9">
+  <h2>📊 Hypothesis Test: Late vs On-Time</h2>
+  <div class="grid2" style="align-items:center">
+    <div>
+      <img src="plots/hypothesis_test_plot.png" class="chart-img" alt="Hypothesis Test">
+    </div>
+    <div class="text-left">
+      <h3>Result: REJECT H₀</h3>
+      <p class="text-left">• <span class="highlight3">On-Time orders:</span> Mean score = 4.29 (n = 89,949)</p>
+      <p class="text-left mt-12">• <span class="highlight2">Late orders:</span> Mean score = 2.27 (n = 6,410)</p>
+      <p class="text-left mt-12">• Difference of <span class="highlight2">2.02 points</span> is highly significant</p>
+      <p class="text-left mt-12">• Late delivery nearly <strong>halves</strong> the review score</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Key Findings -->
+<div class="slide" data-slide="10">
+  <h2>🔑 Key Findings</h2>
+  <div class="findings">
+    <div class="finding"><div class="icon red">1</div><div class="content"><h4>Delivery drives satisfaction</h4><p>Late deliveries receive scores ~2 points lower than on-time (2.27 vs 4.29)</p></div></div>
+    <div class="finding"><div class="icon blue">2</div><div class="content"><h4>Statistically significant</h4><p>Pearson r = −0.267, p &lt; 0.001 — delivery delay negatively correlates with review scores</p></div></div>
+    <div class="finding"><div class="icon green">3</div><div class="content"><h4>93.2% on-time rate</h4><p>Most orders arrive early, but the 6.8% that are late drive disproportionate negative reviews</p></div></div>
+    <div class="finding"><div class="icon red">4</div><div class="content"><h4>Multi-factor satisfaction</h4><p>Delivery explains ~7% of variance — product quality, communication also play key roles</p></div></div>
+    <div class="finding"><div class="icon blue">5</div><div class="content"><h4>Geographic disparities</h4><p>Some states face significantly higher late delivery rates — logistics optimization needed</p></div></div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Recommendations -->
+<div class="slide" data-slide="11">
+  <h2>💡 Recommendations</h2>
+  <div class="grid2">
+    <div class="card"><h3>🚚 Logistics Optimization</h3><p>Target high-delay states with improved carrier partnerships and regional fulfillment centers to reduce late deliveries.</p></div>
+    <div class="card"><h3>📦 Proactive Communication</h3><p>Implement real-time delivery tracking and proactive delay notifications to manage customer expectations.</p></div>
+    <div class="card"><h3>📊 Predictive Monitoring</h3><p>Build a delay prediction model using order & logistics features to flag at-risk orders before shipping.</p></div>
+    <div class="card"><h3>⭐ Recovery Programs</h3><p>Launch targeted recovery campaigns (discount codes, priority support) for customers who experienced late deliveries.</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 13: Thank You -->
+<div class="slide title-slide" data-slide="12">
+  <h1>Thank You</h1>
+  <p class="subtitle">Questions & Discussion</p>
+  <div class="team" style="margin-top:30px">
+    <p style="font-size:.9rem;color:var(--muted)">Olist E-Commerce Delivery & Satisfaction Analysis — Capstone Project</p>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prev()" id="prevBtn">◀</button>
+  <span class="counter" id="counter">1 / 13</span>
+  <button onclick="next()" id="nextBtn">▶</button>
+</div>
+
+<script>
+let current=0;
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+const counter=document.getElementById('counter');
+const progress=document.getElementById('progress');
+
+function show(n){
+  slides.forEach((s,i)=>{
+    s.classList.remove('active','prev');
+    if(i===n)s.classList.add('active');
+    else if(i<n)s.classList.add('prev');
+  });
+  current=n;
+  counter.textContent=`${n+1} / ${total}`;
+  progress.style.width=`${((n+1)/total)*100}%`;
+}
+function next(){if(current<total-1)show(current+1)}
+function prev(){if(current>0)show(current-1)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+show(0);
+</script>
+</body>
+</html>
